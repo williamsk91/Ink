@@ -18,6 +18,20 @@ const schema = yup.object().shape({
     .max(255)
 });
 
+const loginError = [
+  {
+    path: "email",
+    message: "invalid login"
+  }
+];
+
+const confirmEmailError = [
+  {
+    path: "email",
+    message: "email is not confirmed"
+  }
+];
+
 export const resolvers: IResolverMap = {
   Query: {
     hello: (_, { name }: GQL.IHelloOnQueryArguments) =>
@@ -56,6 +70,23 @@ export const resolvers: IResolverMap = {
 
       // send confirmation email
       const link = await createConfirmEmailLink("", user.id, redis);
+
+      // send email
+
+      return null;
+    },
+    /**
+     * User login
+     */
+    login: async (_, { email, password }: GQL.ILoginOnMutationArguments) => {
+      // find by email
+      const user = await User.findOne({ where: { email } });
+      if (!user) return loginError;
+      if (!user.confirmed) return confirmEmailError;
+
+      // confirm password is correct
+      const valid = await bcrypt.compare(password, user.password);
+      if (!valid) return loginError;
 
       return null;
     }
