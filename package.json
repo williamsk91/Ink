@@ -12,12 +12,14 @@
     "typescript": "3.7.4"
   },
   "dependencies": {
+    "@types/yup": "^0.26.27",
     "bcrypt": "^3.0.7",
     "graphql-yoga": "^1.18.3",
     "pg": "^7.15.1",
     "reflect-metadata": "^0.1.13",
     "typeorm": "0.2.22",
-    "uuid": "^3.3.3"
+    "uuid": "^3.3.3",
+    "yup": "^0.28.0"
   },
   "scripts": {
     "start": "nodemon --exec ts-node --files src/index.ts",
