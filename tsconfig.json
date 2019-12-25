@@ -17,7 +17,8 @@
     "pretty": true,
     "strictNullChecks": true,
     "noUnusedLocals": true,
-    "downlevelIteration": true
+    "downlevelIteration": true,
+    "esModuleInterop": true
   },
   "exclude": ["tmp", "temp", "build", "node_modules"]
 }
