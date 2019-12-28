@@ -3,7 +3,8 @@ import {
   Column,
   BaseEntity,
   OneToOne,
-  PrimaryGeneratedColumn
+  PrimaryGeneratedColumn,
+  CreateDateColumn
 } from "typeorm";
 import { Page } from "./Page";
 
@@ -15,6 +16,9 @@ export class State extends BaseEntity {
   // the page path
   @Column("varchar")
   content: string;
+
+  @CreateDateColumn()
+  createdDate: Date;
 
   @OneToOne(
     () => Page,

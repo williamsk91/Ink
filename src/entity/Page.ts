@@ -1,19 +1,19 @@
 import {
   Entity,
   Column,
-  PrimaryColumn,
-  BeforeInsert,
   BaseEntity,
   OneToOne,
-  JoinColumn
+  JoinColumn,
+  PrimaryGeneratedColumn,
+  CreateDateColumn,
+  UpdateDateColumn
 } from "typeorm";
-import uuidv4 from "uuid/v4";
 
 import { State } from "./State";
 
 @Entity()
 export class Page extends BaseEntity {
-  @PrimaryColumn("uuid")
+  @PrimaryGeneratedColumn("uuid")
   id: string;
 
   @Column("varchar", { length: 255, nullable: true })
@@ -23,15 +23,16 @@ export class Page extends BaseEntity {
   @Column("varchar", { array: true })
   path: string[];
 
+  @CreateDateColumn()
+  createdDate: Date;
+
+  @UpdateDateColumn()
+  updatedDate: Date;
+
   @OneToOne(
     () => State,
     state => state.page
   )
   @JoinColumn()
   state: State;
-
-  @BeforeInsert()
-  addId() {
-    this.id = uuidv4();
-  }
 }
