@@ -5,6 +5,7 @@ import {
   BeforeInsert,
   BaseEntity
 } from "typeorm";
+import bcrypt from "bcrypt";
 import uuidv4 from "uuid/v4";
 
 @Entity("users")
@@ -24,5 +25,9 @@ export class User extends BaseEntity {
   @BeforeInsert()
   addId() {
     this.id = uuidv4();
+  }
+  @BeforeInsert()
+  async hashPassword() {
+    this.password = await bcrypt.hash(this.password, 10);
   }
 }

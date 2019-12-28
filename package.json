@@ -4,6 +4,7 @@
   "description": "Awesome project developed with TypeORM.",
   "devDependencies": {
     "@types/bcrypt": "^3.0.0",
+    "@types/connect-redis": "^0.0.13",
     "@types/express-session": "^1.15.16",
     "@types/ioredis": "^4.14.3",
     "@types/node": "^13.1.0",
@@ -16,6 +17,7 @@
   "dependencies": {
     "@types/yup": "^0.26.27",
     "bcrypt": "^3.0.7",
+    "connect-redis": "^4.0.3",
     "dotenv": "^8.2.0",
     "express-session": "^1.17.0",
     "graphql-yoga": "^1.18.3",
@@ -27,7 +29,7 @@
     "yup": "^0.28.0"
   },
   "scripts": {
-    "start": "nodemon --exec ts-node --files src/index.ts",
+    "start": "nodemon --exec ts-node --files src/index.ts -r dotenv/config",
     "gen-schema-types": "gql2ts src/schema.graphql -o src/types/schema.d.ts"
   }
 }

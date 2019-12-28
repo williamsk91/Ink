@@ -5,6 +5,8 @@ import { IResolverMap } from "./types/graphql-utils";
 import { User } from "./entity/User";
 import { formatYupError } from "./utils/formatYupError";
 import { createConfirmEmailLink } from "./utils/createConfirmEmailLink";
+import { createMiddleware } from "./utils/createMiddleware";
+import middleware from "./middleware";
 
 const schema = yup.object().shape({
   email: yup
@@ -34,8 +36,9 @@ const confirmEmailError = [
 
 export const resolvers: IResolverMap = {
   Query: {
-    hello: (_, { name }: GQL.IHelloOnQueryArguments) =>
-      `Hello ${name || "World"}`
+    me: createMiddleware(middleware, (_parent, _args, { session }) =>
+      User.findOne({ where: { id: session.userId } })
+    )
   },
   Mutation: {
     /**
@@ -50,7 +53,7 @@ export const resolvers: IResolverMap = {
       }
 
       // add user
-      const { email, password } = args;
+      const { email } = args;
       const userAlreadyExists = await User.findOne({
         where: { email },
         select: ["id"]
@@ -59,12 +62,8 @@ export const resolvers: IResolverMap = {
         return [{ path: "email", message: "already taken" }];
       }
 
-      const hashedPass = await bcrypt.hash(password, 10);
-
-      const user = User.create({
-        email,
-        password: hashedPass
-      });
+      // hashing is done in the user definition itself
+      const user = User.create(args);
 
       await user.save();
 
@@ -78,7 +77,11 @@ export const resolvers: IResolverMap = {
     /**
      * User login
      */
-    login: async (_, { email, password }: GQL.ILoginOnMutationArguments) => {
+    login: async (
+      _,
+      { email, password }: GQL.ILoginOnMutationArguments,
+      { session }
+    ) => {
       // find by email
       const user = await User.findOne({ where: { email } });
       if (!user) return loginError;
@@ -88,7 +91,24 @@ export const resolvers: IResolverMap = {
       const valid = await bcrypt.compare(password, user.password);
       if (!valid) return loginError;
 
+      // login succesful
+      session.userId = user.id;
+
       return null;
-    }
+    },
+
+    /**
+     * User logout
+     */
+    logout: (_parent, _args, { session }) =>
+      new Promise(res =>
+        session.destroy(err => {
+          if (err) {
+            console.log("logout err: ", err);
+          }
+
+          res(true);
+        })
+      )
   }
 };

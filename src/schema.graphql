@@ -3,11 +3,17 @@ type Error {
   message: String!
 }
 
+type User {
+  id: ID!
+  email: String!
+}
+
 type Query {
-  hello(name: String): String!
+  me: User
 }
 
 type Mutation {
   register(email: String!, password: String!): [Error!]
   login(email: String!, password: String!): [Error!]
+  logout: Boolean
 }
