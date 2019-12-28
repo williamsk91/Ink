@@ -16,7 +16,7 @@ export class Page extends BaseEntity {
   @PrimaryColumn("uuid")
   id: string;
 
-  @Column("varchar", { length: 255 })
+  @Column("varchar", { length: 255, nullable: true })
   title: string;
 
   // the page path
