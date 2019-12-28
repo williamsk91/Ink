@@ -7,7 +7,6 @@ import session from "express-session";
 import connectRedis from "connect-redis";
 
 import { resolvers } from "./resolvers";
-import { User } from "./entity/User";
 
 const redis = new Redis();
 const RedisStore = connectRedis(session);
@@ -46,21 +45,6 @@ const cors = {
   credential: true,
   origin: process.env.FRONTEND_HOST as string
 };
-
-/**
- * Confirm email
- */
-server.express.get("/confirm/:id", async (req, res) => {
-  const { id } = req.params;
-  const userId = await redis.get(id);
-
-  if (userId) {
-    await User.update({ id: userId }, { confirmed: true });
-    res.send("ok");
-  } else {
-    res.send("invalid");
-  }
-});
 
 createConnection().then(async connection => {
   server.start({ cors, port: 4000 });
