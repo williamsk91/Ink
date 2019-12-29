@@ -42,7 +42,6 @@ server.express.use(
 );
 
 const cors = {
-  credential: true,
   origin: process.env.FRONTEND_HOST as string
 };
 
