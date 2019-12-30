@@ -42,7 +42,7 @@ server.express.use(
 );
 
 const cors = {
-  origin: process.env.FRONTEND_HOST as string
+  origin: [process.env.FRONTEND_HOST as string, "https://app.kaminote.io"]
 };
 
 createConnection().then(async connection => {
