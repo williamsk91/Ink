@@ -42,10 +42,11 @@ server.express.use(
 );
 
 const cors = {
-  origin: [process.env.FRONTEND_HOST as string, "https://app.kaminote.io"]
+  origin: [process.env.FRONTEND_HOST as string]
 };
 
 createConnection().then(async connection => {
-  server.start({ cors, port: 4000 });
-  console.log("Server is running on localhost:4000");
+  server.start({ cors, port: 4000 }, ({ port }) => {
+    console.log(`Server is running on localhost:${port}`);
+  });
 });
