@@ -1,3 +1,9 @@
+type User {
+  id: String!
+  email: String!
+  displayName: String
+}
+
 type Page {
   id: String
   title: String
@@ -7,9 +13,11 @@ type Page {
 
 type Query {
   getPage(id: String!): Page
+  me: User
 }
 
 type Mutation {
   createPage(path: [String!]!): Page
   saveContent(pageId: String!, content: String!): String
+  invalidateTokens: Boolean
 }

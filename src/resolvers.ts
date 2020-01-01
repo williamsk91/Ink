@@ -1,9 +1,14 @@
 import { IResolverMap } from "./types/graphql-utils";
 import { Page } from "./entity/Page";
 import { State } from "./entity/State";
+import { User } from "./entity/User";
 
 export const resolvers: IResolverMap = {
   Query: {
+    me: async (_parent, _args, { req }) => {
+      if (!req.userId) return null;
+      return User.findOne(req.userId);
+    },
     getPage: async (_parent, { id }: GQL.IGetPageOnQueryArguments) => {
       // find by id
       const page = await Page.findOne({ where: { id }, relations: ["state"] });
@@ -58,6 +63,21 @@ export const resolvers: IResolverMap = {
       const savedState = await newState.save();
 
       return savedState.id;
+    },
+    invalidateTokens: async (_, __, { req, res }) => {
+      if (!req.userId) return false;
+
+      // updates count
+      const user = await User.findOne(req.userId);
+      if (!user) return false;
+      user.count += 1;
+      await user.save();
+
+      // clear cookies
+      res.clearCookie("refresh-token");
+      res.clearCookie("access-token");
+
+      return true;
     }
   }
 };

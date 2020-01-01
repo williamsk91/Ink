@@ -4,6 +4,9 @@ import { GraphQLServer } from "graphql-yoga";
 
 import { resolvers } from "./resolvers";
 import { useGoogleOauth } from "./authentication/google";
+import { IContext } from "./types/graphql-utils";
+import cookieParser = require("cookie-parser");
+import { JWTMiddleware } from "./authentication/JWT";
 
 const start = async () => {
   /**
@@ -12,12 +15,17 @@ const start = async () => {
   const server = new GraphQLServer({
     typeDefs: "./src/schema.graphql",
     resolvers,
-    context: ({ request }) => ({
-      url: request.protocol + "://" + request.get("host")
+    context: ({ request, response }): IContext => ({
+      url: request.protocol + "://" + request.get("host"),
+      req: request,
+      res: response
     })
   });
 
   await createConnection();
+
+  server.express.use(cookieParser());
+  server.express.use(JWTMiddleware());
 
   /**
    * Oauth
@@ -34,7 +42,7 @@ const start = async () => {
   };
 
   server.start({ cors, port: process.env.PORT || 4000 }, ({ port }) => {
-    console.log(`Server is running on localhost:${port}`);
+    console.log(`🚀  Server is running on localhost:${port}`);
   });
 };
 

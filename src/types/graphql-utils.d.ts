@@ -1,21 +1,15 @@
-import { Request } from "express";
+import { Request, Response } from "express";
+
+export interface IContext {
+  url: string;
+  req: Request;
+  res: Response;
+}
 
 export type IResolver = (
   parent: any,
   args: any,
-  context: {
-    url: string;
-  },
-  info: any
-) => any;
-
-export type IGraphQLMiddleware = (
-  resolver: IResolver,
-  parent: any,
-  args: any,
-  context: {
-    url: string;
-  },
+  context: IContext,
   info: any
 ) => any;
 

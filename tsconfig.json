@@ -19,5 +19,6 @@
     "downlevelIteration": true,
     "esModuleInterop": true
   },
+  "typeRoots": ["./typings"],
   "exclude": ["dist", "node_modules"]
 }

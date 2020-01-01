@@ -22,6 +22,12 @@ export class User extends BaseEntity {
   @Column("text", { nullable: true })
   googleId: string | null;
 
+  /**
+   * Used to refresh access tokens
+   */
+  @Column("int", { default: 0 })
+  count: number;
+
   @CreateDateColumn()
   createdDate: Date;
 

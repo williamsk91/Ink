@@ -23,6 +23,7 @@ column: number;
 interface IQuery {
 __typename: "Query";
 getPage: IPage | null;
+me: IUser | null;
 }
 
 interface IGetPageOnQueryArguments {
@@ -37,10 +38,18 @@ path: Array<string | null> | null;
 content: string | null;
 }
 
+interface IUser {
+__typename: "User";
+id: string;
+email: string;
+displayName: string | null;
+}
+
 interface IMutation {
 __typename: "Mutation";
 createPage: IPage | null;
 saveContent: string | null;
+invalidateTokens: boolean | null;
 }
 
 interface ICreatePageOnMutationArguments {
