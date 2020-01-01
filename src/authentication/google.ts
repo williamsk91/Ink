@@ -4,7 +4,7 @@ import { Strategy as GoogleStrategy } from "passport-google-oauth20";
 import { getConnection } from "typeorm";
 
 import { User } from "../entity/User";
-import { createJWT, setJWTCookie } from "./JWT";
+import { setJWTCookie } from "./JWT";
 
 export const useGoogleOauth = (server: GraphQLServer) => {
   /**
@@ -51,12 +51,7 @@ export const useGoogleOauth = (server: GraphQLServer) => {
           await user.save();
         }
 
-        /**
-         * JWT token
-         */
-        const { accessToken, refreshToken } = createJWT(user);
-
-        return cb(undefined, { accessToken, refreshToken });
+        return cb(undefined, user);
       }
     )
   );
@@ -73,8 +68,8 @@ export const useGoogleOauth = (server: GraphQLServer) => {
   server.express.get(
     "/auth/google/callback",
     passport.authenticate("google", { session: false }),
-    (_req, res) => {
-      setJWTCookie(res, (res as any).user);
+    (req, res) => {
+      setJWTCookie(res, (req as any).user);
 
       // redirect to frontend -> page
       res.redirect("/");
