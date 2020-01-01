@@ -6,8 +6,10 @@ import {
   JoinColumn,
   PrimaryGeneratedColumn,
   CreateDateColumn,
-  UpdateDateColumn
+  UpdateDateColumn,
+  BeforeInsert
 } from "typeorm";
+import uuid from "uuid/v4";
 
 import { State } from "./State";
 
@@ -35,4 +37,9 @@ export class Page extends BaseEntity {
   )
   @JoinColumn()
   state: State;
+
+  @BeforeInsert()
+  generateId = async () => {
+    this.id = uuid();
+  };
 }

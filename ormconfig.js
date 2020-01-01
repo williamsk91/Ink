@@ -5,8 +5,8 @@ const baseConfig = {
   synchronize: true,
   logging: false,
   entities: [`${typeOrmDir}/entity/**/*`],
-  migrations: ["src/migration/**/*.{js, ts}"],
-  subscribers: ["src/subscriber/**/*.{js, ts}"],
+  migrations: [`${typeOrmDir}/migration/**/*`],
+  subscribers: [`${typeOrmDir}/subscriber/**/*`],
   cli: {
     entitiesDir: "src/entity",
     migrationsDir: "src/migration",
