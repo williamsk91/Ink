@@ -7,16 +7,23 @@ import {
   PrimaryGeneratedColumn,
   CreateDateColumn,
   UpdateDateColumn,
-  BeforeInsert
+  BeforeInsert,
+  OneToMany
 } from "typeorm";
 import uuid from "uuid/v4";
 
 import { State } from "./State";
+import { PageToUser } from "./PageToUser";
 
 @Entity()
 export class Page extends BaseEntity {
   @PrimaryGeneratedColumn("uuid")
   id: string;
+
+  @BeforeInsert()
+  generateId = async () => {
+    this.id = uuid();
+  };
 
   @Column("varchar", { length: 255, nullable: true })
   title: string;
@@ -38,8 +45,10 @@ export class Page extends BaseEntity {
   @JoinColumn()
   state: State;
 
-  @BeforeInsert()
-  generateId = async () => {
-    this.id = uuid();
-  };
+  @OneToMany(
+    () => PageToUser,
+    pageToUser => pageToUser.page,
+    { cascade: true }
+  )
+  pageToUser: PageToUser[];
 }

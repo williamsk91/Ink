@@ -2,6 +2,7 @@ import { IResolverMap } from "./types/graphql-utils";
 import { Page } from "./entity/Page";
 import { State } from "./entity/State";
 import { User } from "./entity/User";
+import { PageToUser, PageAccess } from "./entity/PageToUser";
 
 export const resolvers: IResolverMap = {
   Query: {
@@ -26,17 +27,45 @@ export const resolvers: IResolverMap = {
     }
   },
   Mutation: {
-    createPage: async (_, { path }: GQL.ICreatePageOnMutationArguments) => {
+    createPage: async (
+      _,
+      { path }: GQL.ICreatePageOnMutationArguments,
+      { req }
+    ) => {
+      // ensure user is logged in
+      if (!req.userId) return null;
+      const user = await User.findOne(req.userId);
+
+      /**
+       * PageToUser
+       */
+      const pageToUser = PageToUser.create({
+        user,
+        access: PageAccess.Creator
+      });
+
+      /**
+       * `Page`
+       */
+      const page = Page.create({
+        path,
+        // connect user
+        pageToUser: [pageToUser]
+      });
+
+      /**
+       * `State`
+       */
       const startingContent = "";
-
-      const newPage = Page.create({ path });
-
       const newState = State.create({
         content: startingContent,
         // connect state and page
-        page: newPage
+        page
       });
 
+      /**
+       * Saving
+       */
       const savedState = await newState.save();
 
       const { id, title } = savedState.page;

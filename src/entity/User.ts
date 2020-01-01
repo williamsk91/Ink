@@ -4,14 +4,21 @@ import {
   BaseEntity,
   PrimaryGeneratedColumn,
   BeforeInsert,
-  CreateDateColumn
+  CreateDateColumn,
+  OneToMany
 } from "typeorm";
 import uuid from "uuid/v4";
+import { PageToUser } from "./PageToUser";
 
 @Entity("users")
 export class User extends BaseEntity {
   @PrimaryGeneratedColumn("uuid")
   id: string;
+
+  @BeforeInsert()
+  generateId = async () => {
+    this.id = uuid();
+  };
 
   @Column("varchar", { length: 255 })
   email: string;
@@ -31,8 +38,9 @@ export class User extends BaseEntity {
   @CreateDateColumn()
   createdDate: Date;
 
-  @BeforeInsert()
-  generateId = async () => {
-    this.id = uuid();
-  };
+  @OneToMany(
+    () => PageToUser,
+    pageToUser => pageToUser.user
+  )
+  pageToUser: PageToUser[];
 }
