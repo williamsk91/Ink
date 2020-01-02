@@ -1,3 +1,10 @@
+import {
+  AuthenticationError,
+  UserInputError,
+  ForbiddenError
+} from "apollo-server-errors";
+import { getConnection } from "typeorm";
+
 import { IResolverMap } from "./types/graphql-utils";
 import { Page } from "./entity/Page";
 import { State } from "./entity/State";
@@ -7,15 +14,32 @@ import { PageToUser, PageAccess } from "./entity/PageToUser";
 export const resolvers: IResolverMap = {
   Query: {
     me: async (_parent, _args, { req }) => {
-      if (!req.userId) return null;
+      if (!req.userId) throw new AuthenticationError("user is not signed in");
       return User.findOne(req.userId);
     },
-    getPage: async (_parent, { id }: GQL.IGetPageOnQueryArguments) => {
-      // find by id
-      const page = await Page.findOne({ where: { id }, relations: ["state"] });
+    getPage: async (_parent, { id }: GQL.IGetPageOnQueryArguments, { req }) => {
+      // find page by id
+      const page = await getConnection()
+        .getRepository(Page)
+        .createQueryBuilder("page")
+        // `State`
+        .leftJoinAndSelect("page.state", "state")
+        // `User` through `PageToUser`
+        .leftJoinAndSelect("page.pageToUser", "pageToUser")
+        .leftJoinAndSelect("pageToUser.user", "user")
+        .where("page.id = :id", { id })
+        .getOne();
 
-      // return null if not found
-      if (!page) return null;
+      if (!page) throw new UserInputError("page does not exist");
+
+      // check `User`'s `PageAccess`
+      if (!req.userId) throw new AuthenticationError("user is not signed in");
+      const pageToUser = page.pageToUser.find(({ user, access }) => {
+        return req.userId === user.id && access === PageAccess.Creator;
+      });
+
+      // user can access this page
+      if (!pageToUser) throw new ForbiddenError("user has no access to page");
 
       const { title, path } = page;
       return {
@@ -78,11 +102,15 @@ export const resolvers: IResolverMap = {
     },
     saveContent: async (
       _parent,
-      { pageId, content }: GQL.ISaveContentOnMutationArguments
+      { pageId, content }: GQL.ISaveContentOnMutationArguments,
+      { req }
     ) => {
       // find page
       const page = await Page.findOne(pageId);
-      if (!page) return null;
+      if (!page) throw new UserInputError("page does not exist");
+
+      // verify user
+      if (!req.userId) throw new AuthenticationError("user is not signed in ");
 
       // save content as new state
       const newState = State.create({

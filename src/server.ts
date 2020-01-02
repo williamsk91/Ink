@@ -38,7 +38,8 @@ const start = async () => {
    * Cors
    */
   const cors = {
-    origin: [process.env.FRONTEND_HOST as string, "https://app.kaminote.io"]
+    origin: [process.env.FRONTEND_HOST as string, "https://app.kaminote.io"],
+    credentials: true
   };
 
   server.start({ cors, port: process.env.PORT || 4000 }, ({ port }) => {

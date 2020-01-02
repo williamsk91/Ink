@@ -72,7 +72,7 @@ export const useGoogleOauth = (server: GraphQLServer) => {
       setJWTCookie(res, (req as any).user);
 
       // redirect to frontend -> page
-      res.redirect("/");
+      res.redirect(`${process.env.FRONTEND_HOST}/login/sucesss`);
     }
   );
 };
