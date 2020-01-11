@@ -76,48 +76,22 @@ export const resolvers: IResolverMap = {
       { req }
     ) => {
       // ensure user is logged in
-      if (!req.userId) return null;
+      if (!req.userId) throw new AuthenticationError("user is not signed in ");
+
       const user = await User.findOne(req.userId);
 
-      /**
-       * PageToUser
-       */
-      const pageToUser = PageToUser.create({
-        user,
-        access: PageAccess.Creator
-      });
+      // TODO: change this error type
+      if (!user) throw new AuthenticationError("user is not found ");
 
-      /**
-       * `Page`
-       */
-      const page = Page.create({
-        path,
-        title: "",
-        // connect user
-        pageToUser: [pageToUser]
-      });
+      const savedState = await createBasePage(user, path);
 
-      /**
-       * `State`
-       */
-      const startingContent = "";
-      const newState = State.create({
-        content: startingContent,
-        // connect state and page
-        page
-      });
-
-      /**
-       * Saving
-       */
-      const savedState = await newState.save();
-
+      const { content } = savedState;
       const { id, title } = savedState.page;
       return {
         id,
         title,
         path,
-        content: startingContent
+        content
       };
     },
     savePageTitle: async (
@@ -175,4 +149,43 @@ export const resolvers: IResolverMap = {
       return true;
     }
   }
+};
+
+// ------------------------- Helpers -------------------------
+
+export const createBasePage = async (user: User, path: string[]) => {
+  /**
+   * PageToUser
+   */
+  const pageToUser = PageToUser.create({
+    user,
+    access: PageAccess.Creator
+  });
+
+  /**
+   * `Page`
+   */
+  const page = Page.create({
+    path,
+    title: "",
+    // connect user
+    pageToUser: [pageToUser]
+  });
+
+  /**
+   * `State`
+   */
+  const startingContent = "";
+  const newState = State.create({
+    content: startingContent,
+    // connect state and page
+    page
+  });
+
+  /**
+   * Saving
+   */
+  const savedState = await newState.save();
+
+  return savedState;
 };

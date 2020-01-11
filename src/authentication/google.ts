@@ -1,6 +1,8 @@
 import { Strategy as GoogleStrategy } from "passport-google-oauth20";
 import { GraphQLServer } from "graphql-yoga";
+import { PageToUser } from "../entity/PageToUser";
 import { User } from "../entity/User";
+import { createBasePage } from "../resolvers";
 import { getConnection } from "typeorm";
 import passport from "passport";
 import { setJWTCookie } from "./JWT";
@@ -37,12 +39,15 @@ export const useGoogleOauth = (server: GraphQLServer) => {
          * Update user depending on user status
          */
         if (!user) {
-          // new user -> create user
+          /**
+           * new user -> create user and a base page
+           */
           user = await User.create({
             username: displayName,
             email,
             googleId: id
           }).save();
+          await createBasePage(user, []);
         } else if (!user.googleId) {
           // known user first sign in
           // using google -> update googleId
@@ -67,11 +72,24 @@ export const useGoogleOauth = (server: GraphQLServer) => {
   server.express.get(
     "/auth/google/callback",
     passport.authenticate("google", { session: false }),
-    (req, res) => {
+    async (req, res) => {
       setJWTCookie(res, (req as any).user);
 
+      // get a user page id
+      const pageToUsers = await getConnection()
+        .getRepository(PageToUser)
+        .createQueryBuilder("pageToUser")
+        .leftJoinAndSelect("pageToUser.page", "page")
+        .leftJoinAndSelect("pageToUser.user", "user")
+        .where("user.id = :userId", { userId: (req.user as User).id })
+        .getOne();
+
       // redirect to frontend -> page
-      res.redirect(`${process.env.FRONTEND_HOST}/login/sucesss`);
+      res.redirect(
+        `${process.env.FRONTEND_HOST}/page/${
+          pageToUsers ? pageToUsers.page.id : ""
+        }`
+      );
     }
   );
 };
