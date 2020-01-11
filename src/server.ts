@@ -1,12 +1,13 @@
 import "reflect-metadata";
-import { createConnection } from "typeorm";
-import { GraphQLServer } from "graphql-yoga";
 
+import { GraphQLServer } from "graphql-yoga";
+import { IContext } from "./types/graphql-utils";
+import { JWTMiddleware } from "./authentication/JWT";
+import { createConnection } from "typeorm";
 import { resolvers } from "./resolvers";
 import { useGoogleOauth } from "./authentication/google";
-import { IContext } from "./types/graphql-utils";
+
 import cookieParser = require("cookie-parser");
-import { JWTMiddleware } from "./authentication/JWT";
 
 const start = async () => {
   /**

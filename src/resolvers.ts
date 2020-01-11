@@ -1,15 +1,15 @@
 import {
   AuthenticationError,
-  UserInputError,
-  ForbiddenError
+  ForbiddenError,
+  UserInputError
 } from "apollo-server-errors";
-import { getConnection } from "typeorm";
+import { PageAccess, PageToUser } from "./entity/PageToUser";
 
 import { IResolverMap } from "./types/graphql-utils";
 import { Page } from "./entity/Page";
 import { State } from "./entity/State";
 import { User } from "./entity/User";
-import { PageToUser, PageAccess } from "./entity/PageToUser";
+import { getConnection } from "typeorm";
 
 export const resolvers: IResolverMap = {
   Query: {

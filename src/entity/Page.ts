@@ -1,19 +1,19 @@
 import {
-  Entity,
-  Column,
   BaseEntity,
-  OneToOne,
-  JoinColumn,
-  PrimaryGeneratedColumn,
-  CreateDateColumn,
-  UpdateDateColumn,
   BeforeInsert,
-  OneToMany
+  Column,
+  CreateDateColumn,
+  Entity,
+  JoinColumn,
+  OneToMany,
+  OneToOne,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn
 } from "typeorm";
-import uuid from "uuid/v4";
 
-import { State } from "./State";
 import { PageToUser } from "./PageToUser";
+import { State } from "./State";
+import uuid from "uuid/v4";
 
 @Entity()
 export class Page extends BaseEntity {

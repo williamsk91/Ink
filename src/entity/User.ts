@@ -1,14 +1,15 @@
 import {
-  Entity,
-  Column,
   BaseEntity,
-  PrimaryGeneratedColumn,
   BeforeInsert,
+  Column,
   CreateDateColumn,
-  OneToMany
+  Entity,
+  OneToMany,
+  PrimaryGeneratedColumn
 } from "typeorm";
-import uuid from "uuid/v4";
+
 import { PageToUser } from "./PageToUser";
+import uuid from "uuid/v4";
 
 @Entity("users")
 export class User extends BaseEntity {

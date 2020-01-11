@@ -1,14 +1,15 @@
 import {
-  Entity,
-  PrimaryGeneratedColumn,
+  BaseEntity,
   BeforeInsert,
   Column,
+  Entity,
   ManyToOne,
-  BaseEntity
+  PrimaryGeneratedColumn
 } from "typeorm";
-import uuid = require("uuid");
+
 import { Page } from "./Page";
 import { User } from "./User";
+import uuid = require("uuid");
 
 /**
  * Type of `User` access on a `Page`

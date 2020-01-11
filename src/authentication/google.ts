@@ -1,9 +1,8 @@
-import { GraphQLServer } from "graphql-yoga";
-import passport from "passport";
 import { Strategy as GoogleStrategy } from "passport-google-oauth20";
-import { getConnection } from "typeorm";
-
+import { GraphQLServer } from "graphql-yoga";
 import { User } from "../entity/User";
+import { getConnection } from "typeorm";
+import passport from "passport";
 import { setJWTCookie } from "./JWT";
 
 export const useGoogleOauth = (server: GraphQLServer) => {

@@ -1,5 +1,5 @@
-import { sign, verify } from "jsonwebtoken";
 import { Request, Response } from "express";
+import { sign, verify } from "jsonwebtoken";
 
 import { User } from "../entity/User";
 

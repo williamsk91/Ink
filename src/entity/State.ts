@@ -1,11 +1,12 @@
 import {
-  Entity,
-  Column,
   BaseEntity,
+  Column,
+  CreateDateColumn,
+  Entity,
   OneToOne,
-  PrimaryGeneratedColumn,
-  CreateDateColumn
+  PrimaryGeneratedColumn
 } from "typeorm";
+
 import { Page } from "./Page";
 
 @Entity()
