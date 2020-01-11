@@ -48,6 +48,25 @@ export const resolvers: IResolverMap = {
         path,
         content: page.state.content
       };
+    },
+    getUserPages: async (_parent, _args, { req }) => {
+      const userId = req.userId;
+      if (!req.userId) throw new AuthenticationError("user is not signed in");
+
+      const pageToUsers = await getConnection()
+        .getRepository(PageToUser)
+        .createQueryBuilder("pageToUser")
+        .leftJoinAndSelect("pageToUser.page", "page")
+        .leftJoinAndSelect("pageToUser.user", "user")
+        .where("user.id = :userId", { userId })
+        .getMany();
+
+      const pages = pageToUsers.map(({ page }) => ({
+        id: page.id,
+        title: page.title ? page.title : ""
+      }));
+
+      return pages;
     }
   },
   Mutation: {
@@ -73,6 +92,7 @@ export const resolvers: IResolverMap = {
        */
       const page = Page.create({
         path,
+        title: "",
         // connect user
         pageToUser: [pageToUser]
       });
@@ -99,6 +119,24 @@ export const resolvers: IResolverMap = {
         path,
         content: startingContent
       };
+    },
+    savePageTitle: async (
+      _parent,
+      { pageId, title }: GQL.ISavePageTitleOnMutationArguments,
+      { req }
+    ) => {
+      // verify user
+      if (!req.userId) throw new AuthenticationError("user is not signed in ");
+
+      // find page
+      const page = await Page.findOne(pageId);
+      if (!page) throw new UserInputError("page does not exist");
+
+      // update title
+      page.title = title;
+      await page.save();
+
+      return title;
     },
     saveContent: async (
       _parent,
