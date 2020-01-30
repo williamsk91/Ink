@@ -24,6 +24,7 @@ type Query {
 
 type Mutation {
   createPage(path: [String!]!): Page!
+  deletePage(pageId: String!): String!
   savePageTitle(pageId: String!, title: String!): String!
   saveContent(pageId: String!, content: String!): String!
   invalidateTokens: Boolean!

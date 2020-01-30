@@ -48,7 +48,8 @@ displayName: string | null;
 
 interface IMutation {
 __typename: "Mutation";
-createPage: IPage | null;
+createPage: IPage;
+deletePage: string;
 savePageTitle: string;
 saveContent: string;
 invalidateTokens: boolean;
@@ -56,6 +57,10 @@ invalidateTokens: boolean;
 
 interface ICreatePageOnMutationArguments {
 path: Array<string>;
+}
+
+interface IDeletePageOnMutationArguments {
+pageId: string;
 }
 
 interface ISavePageTitleOnMutationArguments {

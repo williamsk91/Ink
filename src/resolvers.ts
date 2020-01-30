@@ -30,7 +30,8 @@ export const resolvers: IResolverMap = {
         .where("page.id = :id", { id })
         .getOne();
 
-      if (!page) throw new UserInputError("page does not exist");
+      if (!page || page.deleted)
+        throw new UserInputError("page does not exist");
 
       // check `User`'s `PageAccess`
       if (!req.userId) throw new AuthenticationError("user is not signed in");
@@ -59,6 +60,7 @@ export const resolvers: IResolverMap = {
         .leftJoinAndSelect("pageToUser.page", "page")
         .leftJoinAndSelect("pageToUser.user", "user")
         .where("user.id = :userId", { userId })
+        .andWhere("page.deleted = FALSE")
         .getMany();
 
       const pages = pageToUsers.map(({ page }) => ({
@@ -93,6 +95,22 @@ export const resolvers: IResolverMap = {
         path,
         content
       };
+    },
+    deletePage: async (
+      _,
+      { pageId }: GQL.IDeletePageOnMutationArguments,
+      { req }
+    ) => {
+      // ensure user is logged in
+      if (!req.userId) throw new AuthenticationError("user is not signed in ");
+
+      const page = await Page.findOne(pageId);
+      if (!page) throw new UserInputError("page does not exist");
+
+      page.deleted = true;
+      await page.save();
+
+      return pageId;
     },
     savePageTitle: async (
       _parent,

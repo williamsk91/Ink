@@ -51,4 +51,7 @@ export class Page extends BaseEntity {
     { cascade: true }
   )
   pageToUser: PageToUser[];
+
+  @Column("boolean", { nullable: false, default: false })
+  deleted: boolean;
 }

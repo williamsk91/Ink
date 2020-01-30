@@ -12,8 +12,7 @@
     "@types/uuid": "^3.4.6",
     "@types/ws": "^6.0.4",
     "gql2ts": "^1.10.1",
-    "nodemon": "^2.0.2",
-    "ts-node": "8.5.4",
+    "ts-node-dev": "^1.0.0-pre.44",
     "typescript": "3.7.4"
   },
   "dependencies": {
@@ -30,7 +29,7 @@
     "uuid": "^3.3.3"
   },
   "scripts": {
-    "dev": "nodemon --exec ts-node -r dotenv/config --files src/server.ts",
+    "dev": "ts-node-dev --no-notify -r dotenv/config --files src/server.ts",
     "genGraphql": "gql2ts src/schema.graphql -o src/types/generated-graphql.d.ts",
     "test-prod": "NODE_ENV=production node -r dotenv/config dist/server.js",
     "build": "rimraf dist && tsc",
