@@ -1,20 +1,16 @@
-import {
-  AuthenticationError,
-  ForbiddenError,
-  UserInputError
-} from "apollo-server-errors";
 import { PageAccess, PageToUser } from "./entity/PageToUser";
 
 import { IResolverMap } from "./types/graphql-utils";
 import { Page } from "./entity/Page";
 import { State } from "./entity/State";
 import { User } from "./entity/User";
+import { errors } from "./errors";
 import { getConnection } from "typeorm";
 
 export const resolvers: IResolverMap = {
   Query: {
     me: async (_parent, _args, { req }) => {
-      if (!req.userId) throw new AuthenticationError("user is not signed in");
+      if (!req.userId) throw errors.notSignedIn;
       return User.findOne(req.userId);
     },
     getPage: async (_parent, { id }: GQL.IGetPageOnQueryArguments, { req }) => {
@@ -30,17 +26,16 @@ export const resolvers: IResolverMap = {
         .where("page.id = :id", { id })
         .getOne();
 
-      if (!page || page.deleted)
-        throw new UserInputError("page does not exist");
+      if (!page || page.deleted) throw errors.noPageFound;
 
       // check `User`'s `PageAccess`
-      if (!req.userId) throw new AuthenticationError("user is not signed in");
+      if (!req.userId) throw errors.notSignedIn;
       const pageToUser = page.pageToUser.find(({ user, access }) => {
         return req.userId === user.id && access === PageAccess.Creator;
       });
 
       // user can access this page
-      if (!pageToUser) throw new ForbiddenError("user has no access to page");
+      if (!pageToUser) throw errors.noPageAccess;
 
       const { title, path } = page;
       return {
@@ -52,7 +47,7 @@ export const resolvers: IResolverMap = {
     },
     getUserPages: async (_parent, _args, { req }) => {
       const userId = req.userId;
-      if (!req.userId) throw new AuthenticationError("user is not signed in");
+      if (!req.userId) throw errors.notSignedIn;
 
       const pageToUsers = await getConnection()
         .getRepository(PageToUser)
@@ -78,12 +73,11 @@ export const resolvers: IResolverMap = {
       { req }
     ) => {
       // ensure user is logged in
-      if (!req.userId) throw new AuthenticationError("user is not signed in ");
+      if (!req.userId) throw errors.notSignedIn;
 
       const user = await User.findOne(req.userId);
 
-      // TODO: change this error type
-      if (!user) throw new AuthenticationError("user is not found ");
+      if (!user) throw errors.noUserFound;
 
       const savedState = await createBasePage(user, path);
 
@@ -102,10 +96,10 @@ export const resolvers: IResolverMap = {
       { req }
     ) => {
       // ensure user is logged in
-      if (!req.userId) throw new AuthenticationError("user is not signed in ");
+      if (!req.userId) throw errors.notSignedIn;
 
       const page = await Page.findOne(pageId);
-      if (!page) throw new UserInputError("page does not exist");
+      if (!page) throw errors.noPageFound;
 
       page.deleted = true;
       await page.save();
@@ -118,11 +112,11 @@ export const resolvers: IResolverMap = {
       { req }
     ) => {
       // verify user
-      if (!req.userId) throw new AuthenticationError("user is not signed in ");
+      if (!req.userId) throw errors.notSignedIn;
 
       // find page
       const page = await Page.findOne(pageId);
-      if (!page) throw new UserInputError("page does not exist");
+      if (!page) throw errors.noPageFound;
 
       // update title
       page.title = title;
@@ -137,10 +131,10 @@ export const resolvers: IResolverMap = {
     ) => {
       // find page
       const page = await Page.findOne(pageId);
-      if (!page) throw new UserInputError("page does not exist");
+      if (!page) throw errors.noPageFound;
 
       // verify user
-      if (!req.userId) throw new AuthenticationError("user is not signed in ");
+      if (!req.userId) throw errors.notSignedIn;
 
       // save content as new state
       const newState = State.create({

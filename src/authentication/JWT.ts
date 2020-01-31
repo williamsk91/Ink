@@ -69,6 +69,9 @@ export const JWTMiddleware = () => async (
       data = verify(refreshToken, process.env.JWT_SECRET as string);
     } catch {}
 
+    // token has been invalidated
+    if (!data) return next();
+
     const user = await User.findOne(data.findOne);
 
     // token has been invalidated

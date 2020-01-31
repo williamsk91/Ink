@@ -82,6 +82,7 @@ export const useGoogleOauth = (server: GraphQLServer) => {
         .leftJoinAndSelect("pageToUser.page", "page")
         .leftJoinAndSelect("pageToUser.user", "user")
         .where("user.id = :userId", { userId: (req.user as User).id })
+        .andWhere("page.deleted = FALSE")
         .getOne();
 
       // redirect to frontend -> page
