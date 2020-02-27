@@ -165,7 +165,12 @@ export const resolvers: IResolverMap = {
 
 // ------------------------- Helpers -------------------------
 
-export const createBasePage = async (user: User, path: string[]) => {
+export const createBasePage = async (
+  user: User,
+  path: string[],
+  title: string = "",
+  content: string = ""
+) => {
   /**
    * PageToUser
    */
@@ -179,7 +184,7 @@ export const createBasePage = async (user: User, path: string[]) => {
    */
   const page = Page.create({
     path,
-    title: "",
+    title,
     // connect user
     pageToUser: [pageToUser]
   });
@@ -187,9 +192,8 @@ export const createBasePage = async (user: User, path: string[]) => {
   /**
    * `State`
    */
-  const startingContent = "";
   const newState = State.create({
-    content: startingContent,
+    content,
     // connect state and page
     page
   });

@@ -4,6 +4,7 @@ import { PageToUser } from "../entity/PageToUser";
 import { User } from "../entity/User";
 import { createBasePage } from "../resolvers";
 import { getConnection } from "typeorm";
+import { onboardingPageContent } from "../data/onboardingPage";
 import passport from "passport";
 import { setJWTCookie } from "./JWT";
 
@@ -44,7 +45,12 @@ export const useGoogleOauth = (server: GraphQLServer) => {
             email,
             googleId: id
           }).save();
-          await createBasePage(user, []);
+          await createBasePage(
+            user,
+            [],
+            "Welcome to Kaminote",
+            onboardingPageContent
+          );
         } else if (!user.googleId) {
           // known user first sign in
           // using google -> update googleId
