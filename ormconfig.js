@@ -10,8 +10,8 @@ const baseConfig = {
   cli: {
     entitiesDir: "src/entity",
     migrationsDir: "src/migration",
-    subscribersDir: "src/subscriber"
-  }
+    subscribersDir: "src/subscriber",
+  },
 };
 
 const localConfig = {
@@ -20,15 +20,15 @@ const localConfig = {
   port: 5432,
   username: "postgres",
   password: "postgres",
-  database: "ink-db"
+  database: "ink",
 };
 
 const prodConfig = process.env.DATABASE_URL && {
   ...baseConfig,
   url: process.env.DATABASE_URL,
   extra: {
-    ssl: true
-  }
+    ssl: true,
+  },
 };
 
 module.exports = process.env.DATABASE_URL ? prodConfig : localConfig;

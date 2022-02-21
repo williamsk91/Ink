@@ -1,6 +1,7 @@
 {
   "name": "ink",
   "version": "0.0.1",
+  "private": true,
   "description": "Awesome project developed with TypeORM.",
   "devDependencies": {
     "@types/cookie-parser": "^1.4.2",
@@ -23,7 +24,7 @@
     "jsonwebtoken": "^8.5.1",
     "passport": "^0.4.1",
     "passport-google-oauth20": "^2.0.0",
-    "pg": "^7.15.1",
+    "pg": "^8.7.3",
     "reflect-metadata": "^0.1.13",
     "typeorm": "0.2.22",
     "uuid": "^3.3.3"
