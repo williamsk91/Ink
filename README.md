@@ -2,6 +2,8 @@
 
 Server side codes for KamiNote
 
+Frontend code: github.com/williamsk91/KamiNote
+
 # Stack
 
 - Language - [Typescript](https://www.typescriptlang.org/)
@@ -32,8 +34,8 @@ FRONTEND_HOST=http://localhost:3000
 JWT_SECRET=
 
 # Google oauth
-GOOGLE_CLIENT_ID=
-GOOGLE_CLIENT_SECRET=
+GOOGLE_CLIENT_ID=564169510133-45i1pkhfu81bovfu0faatam4oolmom9p.apps.googleusercontent.com
+GOOGLE_CLIENT_SECRET=ZYUGKBOqt0RlBHV55YLf0iU3
 
 ```
 
@@ -43,9 +45,8 @@ Also ensure that a local postgres database is created with credentials specified
   port: 5432,
   username: "postgres",
   password: "postgres",
-  database: "ink-db"
+  database: "ink"
 ```
-
 
 ## Start development
 
