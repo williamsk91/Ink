@@ -2,7 +2,7 @@
 
 Server side codes for KamiNote
 
-Frontend code: github.com/williamsk91/KamiNote
+Frontend code: [KamiNote](https://github.com/williamsk91/KamiNote)
 
 # Stack
 
